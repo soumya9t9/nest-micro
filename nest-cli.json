@@ -1,0 +1,30 @@
+{
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/gateway/src",
+  "monorepo": true,
+  "root": "apps/gateway",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/gateway/tsconfig.app.json"
+  },
+  "projects": {
+    "gateway": {
+      "type": "application",
+      "root": "apps/gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/gateway/tsconfig.app.json"
+      }
+    },
+    "franchisor": {
+      "type": "application",
+      "root": "apps/franchisor",
+      "entryFile": "main",
+      "sourceRoot": "apps/franchisor/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/franchisor/tsconfig.app.json"
+      }
+    }
+  }
+}

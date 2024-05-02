@@ -1,0 +1,4 @@
+{
+    "presets": ["es2021"],
+    "plugins": ["transform-es2015-arrow-functions", "transform-async-to-generator"]
+  }

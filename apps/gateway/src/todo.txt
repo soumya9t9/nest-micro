@@ -1,0 +1,6 @@
+#SQL
+coalesce and full outer jsoin : productinstore and productEcom
+
+crosss apply vs outer apply
+
+intercept vs except
