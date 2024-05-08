@@ -3,6 +3,7 @@ import { FranchisorController } from './franchisor.controller';
 import { FranchisorService } from './franchisor.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { RabbitMQService } from './rabbitmq.service';
+import { ExcelService } from './services/excel.service';
 
 @Module({
 	imports: [
@@ -29,6 +30,6 @@ import { RabbitMQService } from './rabbitmq.service';
 		])
 	],
 	controllers: [ FranchisorController ],
-	providers: [ FranchisorService, RabbitMQService ]
+	providers: [ FranchisorService, RabbitMQService, ExcelService ]
 })
 export class FranchisorModule {}

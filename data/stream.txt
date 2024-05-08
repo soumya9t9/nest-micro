@@ -1,0 +1,4 @@
+Readable stream – A readable stream is an abstraction for a source from which data can be read, in other words, it lets you read data from a source
+Writeable stream – A writable stream is an abstraction for a destination to which data can be written
+Duplex stream – You can both read and write into it, in other words, it is a combination of both readable and writeable streams. Example – net.Socket
+Transform stream – It is similar to a duplex stream, but it can modify the data as it is being written and read. Example – zlib.createGzip

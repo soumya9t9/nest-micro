@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { FranchisorModule } from './franchisor.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
   // const app = await NestFactory.create(FranchisorModule);
@@ -47,7 +48,10 @@ async function bootstrap() {
 		}
 	});
 
-  
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
+
   await app.startAllMicroservices();
 	await app.listen(3001);
   console.log(`franchisor- ${await app.getUrl()}`);
