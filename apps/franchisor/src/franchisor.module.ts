@@ -1,12 +1,16 @@
 import { Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { FranchisorController } from './franchisor.controller';
 import { FranchisorService } from './franchisor.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { RabbitMQService } from './rabbitmq.service';
 import { ExcelService } from './services/excel.service';
+import { SseController } from './sse/sse.controller';
+import { SseService } from './sse/sse.service';
 
 @Module({
 	imports: [
+		EventEmitterModule,
 		ClientsModule.register([
       {
         name: 'GATEWAY_SERVICE',
@@ -27,9 +31,9 @@ import { ExcelService } from './services/excel.service';
 					}
 				}
 			}
-		])
+		]),
 	],
-	controllers: [ FranchisorController ],
-	providers: [ FranchisorService, RabbitMQService, ExcelService ]
+	controllers: [ FranchisorController, SseController ],
+	providers: [ FranchisorService, RabbitMQService,ExcelService, SseService ]
 })
 export class FranchisorModule {}

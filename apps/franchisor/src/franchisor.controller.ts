@@ -1,12 +1,12 @@
-import { BadRequestException, Body, Controller, Get, Header, HttpStatus, ParseFilePipeBuilder, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { FranchisorService } from './franchisor.service';
-import { MessagePattern, RmqContext, Ctx, Payload } from '@nestjs/microservices';
-import { RabbitMQService } from './rabbitmq.service';
-import { delay, of } from 'rxjs';
-import { ExcelService } from './services/excel.service';
+import { BadRequestException, Controller, Get, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { Response } from 'express';
+import { delay, of } from 'rxjs';
+import { FranchisorService } from './franchisor.service';
+import { RabbitMQService } from './rabbitmq.service';
+import { ExcelService } from './services/excel.service';
 
 @Controller()
 export class FranchisorController {
@@ -39,7 +39,7 @@ export class FranchisorController {
 
 	@MessagePattern({ cmd: 'ping' })
 	ping(arg: any) {
-		console.log('service-ppr');
+		console.log("service-ppr")
 		return of('sending from franchisor').pipe(delay(500));
 	}
 
