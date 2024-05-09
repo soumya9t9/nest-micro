@@ -14,7 +14,7 @@ export class FranchisorController {
 		private readonly franchisorService: FranchisorService,
 		private readonly rabbitMQService: RabbitMQService,
 		private readonly excelService: ExcelService
-	) {}
+	) { }
 
 	@Get('hello')
 	getHello(): string {
@@ -63,43 +63,68 @@ export class FranchisorController {
 		];
 		return this.excelService.downloadExcel(data).subscribe(({ buffer, filename }) => {
 			return res.set('Content-Disposition', `attachment; filename=${filename}`)
-      .set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-      .send(buffer);
+				.set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+				.send(buffer);
 		});
 		// return this.excelService.downloadExcel(data);
 	}
 
-  @Post('excel/upload')
-  @UseInterceptors(FileInterceptor('file'))
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
-  // @Header('content-type', 'multipart/form-data')
-  uploadExcel(@Res() res:Response, @UploadedFile(
-    // new ParseFilePipeBuilder()
-    // // .addFileTypeValidator({
-    // //   fileType: '.xlsx',
-    // // })
-    // .addMaxSizeValidator({
-    //   maxSize: 1000
-    // })
-    // .build({
-    //   errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    // }),
-  ) file: Express.Multer.File) {
-    if(!file) throw new BadRequestException('File Missing ! Please upload a file');
-    console.log(file);
-    // this.excelService.readExcel(file);
-    this.excelService.readExcelusingXlsx(file);
-    res.status(200).send({message: `successfully uploaded`});
-  }
+	@Post('excel/upload')
+	@UseInterceptors(FileInterceptor('file'))
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				file: {
+					type: 'string',
+					format: 'binary',
+				},
+			},
+		},
+	})
+	// @Header('content-type', 'multipart/form-data')
+	uploadExcel(@Res() res: Response, @UploadedFile(
+		// new ParseFilePipeBuilder()
+		// // .addFileTypeValidator({
+		// //   fileType: '.xlsx',
+		// // })
+		// .addMaxSizeValidator({
+		//   maxSize: 1000
+		// })
+		// .build({
+		//   errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
+		// }),
+	) file: Express.Multer.File) {
+		if (!file) throw new BadRequestException('File Missing ! Please upload a file');
+		console.log(file);
+		this.excelService.readExcelusingExceljs(file);
+		// this.excelService.readExcelusingXlsx(file);
+		res.status(200).send({ message: `successfully uploaded` });
+	}
+
+	@Post('excel/validate')
+	@UseInterceptors(FileInterceptor('file'))
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				file: {
+					type: 'string',
+					format: 'binary',
+				},
+			},
+		},
+	})
+	validateExcel(@Res() res: Response, @UploadedFile() file: Express.Multer.File) {
+		if (!file) throw new BadRequestException('File Missing ! Please upload a file');
+		console.log(file);
+		return this.excelService.readAndEditFile(file).subscribe(({ buffer, filename }) => {
+			return res.set('Content-Disposition', `attachment; filename=${filename}`)
+				.set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+				.send(buffer);
+		});
+		// res.status(200).send({message: `successfully uploaded`});
+	}
 }

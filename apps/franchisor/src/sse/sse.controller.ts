@@ -40,7 +40,7 @@ export class SseController {
 
     /* working */
 	@Sse('connect')
-	sse(@Res() res: Response): any | Observable<MessageEvent> {
+	sse(@Res() res: Response): Observable<MessageEvent> {
 		return this.sseService.createConnection(111);
 	}
 
