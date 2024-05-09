@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, RawBody, Res, Sse } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, Res, Sse } from '@nestjs/common';
 import { Observable, fromEvent, map, of } from 'rxjs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Response } from 'express';
@@ -6,65 +6,59 @@ import { SseService } from './sse.service';
 
 @Controller('sse')
 export class SseController {
-    private eventEmitter: EventEmitter2;
-    res: Response;
-    constructor(private sseService: SseService) {
+	private eventEmitter: EventEmitter2;
+	res: Response;
+	constructor(private sseService: SseService) {
+		this.eventEmitter = new EventEmitter2();
+	}
 
-        this.eventEmitter = new EventEmitter2();
-    }
-    @Get('subscribe')
-    subscribe(@Res() res: Response) {
-        res.writeHead(200, {
-            "Connection": "keep-alive",
-            "Content-Type": "text/event-stream",
-            "Cache-Control": "no-cache",
-            "Access-Control-Allow-Origin": "*"
-        });
-        this.res = res
-        res.flushHeaders();
-    }
+	@Get('subscribe')
+	subscribe(@Res() res: Response) {
+		res.writeHead(200, {
+			Connection: 'keep-alive',
+			'Content-Type': 'text/event-stream',
+			'Cache-Control': 'no-cache',
+			'Access-Control-Allow-Origin': '*'
+		});
 
-    @Sse('connect')
-    sse(@Res() res: Response): any | Observable<MessageEvent> {
-        res.setHeader('Connection', "keep-alive");
-        res.setHeader('Content-Type', "text/event-stream");
-        res.setHeader('Cache-Control', "no-cache");
-        res.setHeader('Access-Control-Allow-Origin', "*");
-        res.setHeader('Content-Encoding', 'none');
-        res.flushHeaders();
-        // res.setHeader({
-        //     Connection: "keep-alive",
-        //     "Content-Type": "text/event-stream",
-        //     "Cache-Control": "no-cache",
-        //     "Access-Control-Allow-Origin": "*"
-        // });
-        // res.socket.write('lol')
-        // return of(new MessageEvent('new-orderrrr', { data: 'new order' }));
-        // return fromEvent(this.eventEmitter, 'new-order').pipe(
-        //     map((data) => {
-        //     }),
-        // );
-        // res.write('');
+        // res.setHeader('Connection', 'keep-alive');
+		// res.setHeader('Content-Type', 'text/event-stream');
+		// res.setHeader('Cache-Control', 'no-cache');
+		// res.setHeader('Access-Control-Allow-Origin', '*');
+		// res.setHeader('Content-Encoding', 'none');
 
-        return this.sseService.createConnection(111);
-    }
+		this.res = res;
+		res.flushHeaders();
+	}
 
     @Post('emit')
     emit() {
         this.eventEmitter.emit('new-order');
-        // this.res.fl
-        this.res.write('id: ' + id + '\n');
-        this.res.flush()
+        this.res.write('hello');
         return { result: 'ok' };
     }
 
-    @Post('notify')
-    notifyAll(@Res() res, @RawBody() data) {
-        // this.eventEmitter.emit('new-order');
-        // this.res.fl
-        // return { result: 'ok' };
-        this.sseService.notifyToOne(111, data);
-        res.send('')
-    }
+    /* working */
+	@Sse('connect')
+	sse(@Res() res: Response): any | Observable<MessageEvent> {
+		return this.sseService.createConnection(111);
+	}
 
+	@Post('notify')
+	notifyAll(@Res() res, @Body() data) {
+		this.sseService.notifyToOne(111, data);
+		res.json({message: 'notified', data});
+	}
+
+    /* working */
+	@Sse('events')
+	events(@Request() req) {
+		return fromEvent(this.eventEmitter, 'eventName');
+	}
+
+	@Post('events-push')
+	async eventsPush() {
+		this.eventEmitter.emit('eventName', { data: { emitting: new Date().toISOString() } });
+		return { ok: true };
+	}
 }
