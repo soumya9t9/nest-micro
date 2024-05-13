@@ -7,6 +7,7 @@ import { RabbitMQService } from './rabbitmq.service';
 import { ExcelService } from './services/excel.service';
 import { SseController } from './sse/sse.controller';
 import { SseService } from './sse/sse.service';
+import { S3bucketService } from './services/s3bucket/s3bucket.service';
 
 @Module({
 	imports: [
@@ -34,6 +35,6 @@ import { SseService } from './sse/sse.service';
 		]),
 	],
 	controllers: [ FranchisorController, SseController ],
-	providers: [ FranchisorService, RabbitMQService,ExcelService, SseService ]
+	providers: [ FranchisorService, RabbitMQService,ExcelService, SseService, S3bucketService ]
 })
 export class FranchisorModule {}

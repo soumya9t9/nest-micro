@@ -7,13 +7,15 @@ import { delay, of } from 'rxjs';
 import { FranchisorService } from './franchisor.service';
 import { RabbitMQService } from './rabbitmq.service';
 import { ExcelService } from './services/excel.service';
+import { S3bucketService } from './services/s3bucket/s3bucket.service';
 
 @Controller()
 export class FranchisorController {
 	constructor(
 		private readonly franchisorService: FranchisorService,
 		private readonly rabbitMQService: RabbitMQService,
-		private readonly excelService: ExcelService
+		private readonly excelService: ExcelService,
+		private readonly s3bucket: S3bucketService
 	) { }
 
 	@Get('hello')
@@ -126,5 +128,28 @@ export class FranchisorController {
 				.send(buffer);
 		});
 		// res.status(200).send({message: `successfully uploaded`});
+	}
+
+	@Post('upload/s3')
+	@UseInterceptors(FileInterceptor('file'))
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				file: {
+					type: 'string',
+					format: 'binary',
+				},
+			},
+		},
+	})
+	// @Header('content-type', 'multipart/form-data')
+	uploadToS3(@Res() res: Response, @UploadedFile() file: Express.Multer.File) {
+		if (!file) throw new BadRequestException('File Missing ! Please upload a file');
+		console.log(file);
+		this.s3bucket.uploadFile(file).then(() =>{
+			res.status(200).send({ message: `successfully uploaded` });
+		});
 	}
 }

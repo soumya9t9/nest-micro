@@ -32,6 +32,7 @@
     "@types/amqplib": "^0.10.5",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.4",
+    "aws-sdk": "^2.1618.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "dotenv": "^16.4.5",
