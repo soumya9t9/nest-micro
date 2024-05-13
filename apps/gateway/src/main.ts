@@ -20,27 +20,27 @@ async function bootstrap() {
 	SwaggerModule.setup('/', app, document);
 
 	// microservice #1
-	app.connectMicroservice<MicroserviceOptions>({
-		transport: Transport.TCP,
-		options: {
-		  host: '127.0.0.1',
-		  port: 3300
-		}
-	  })
+	// app.connectMicroservice<MicroserviceOptions>({
+	// 	transport: Transport.TCP,
+	// 	options: {
+	// 	  host: '127.0.0.1',
+	// 	  port: 3300
+	// 	}
+	//   })
 
-	// microservice #2
-	const microserviceRMQ = app.connectMicroservice<MicroserviceOptions>({
-		transport: Transport.RMQ,
-		options: {
-			urls: [ 'amqp://localhost:5672' ],
-			queue: 'cats_queue',
-			queueOptions: {
-				durable: false
-			}
-		}
-	});
+	// // microservice #2
+	// const microserviceRMQ = app.connectMicroservice<MicroserviceOptions>({
+	// 	transport: Transport.RMQ,
+	// 	options: {
+	// 		urls: [ 'amqp://localhost:5672' ],
+	// 		queue: 'cats_queue',
+	// 		queueOptions: {
+	// 			durable: false
+	// 		}
+	// 	}
+	// });
 
-	await app.startAllMicroservices();
+	// await app.startAllMicroservices();
 	await app.listen(3300);
 	console.log(`gateway- ${await app.getUrl()}`);
 }

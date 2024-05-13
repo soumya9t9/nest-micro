@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Observable, from, map, of } from 'rxjs';
+import { Observable, flatMap, from, map, mergeMap, of } from 'rxjs';
 import * as exceljs from 'exceljs';
 import * as xlsx from 'xlsx';
 
@@ -57,30 +57,31 @@ export class ExcelService {
 	readAndEditFile(file: Express.Multer.File): Observable<any> {
 		const workbook = new exceljs.Workbook();
 		return from(workbook.xlsx.load(file.buffer)).pipe(
-			map(
+			mergeMap(
 				res => {
 
 					workbook.eachSheet(eachSheet => {
 						eachSheet.eachRow(row => {
 							row.eachCell(cell => {
-								// cell.fill = {
-								// 	type: 'pattern',
-								// 	pattern: 'darkTrellis',
-								// 	fgColor: { argb: 'FFFFFF00' },
-								// 	bgColor: { argb: 'FF0000FF' }
-								// }
+								cell.fill = {
+									type: 'pattern',
+									pattern: 'solid',
+									fgColor: { argb: 'FFFFFF00' },
+									bgColor: { argb: 'FF0000FF' }
+								}
 							})
 						})
 					})
 					workbook.creator = "soumya";
 					const filename = 'excelfile.xlsx'//new Date().toISOString() + '.xlsx';
-					return {buffer:workbook.xlsx.writeBuffer({ filename }), filename }
-					// const buffer$ = from(workbook.xlsx.writeBuffer({ filename }));
-					// return buffer$.pipe(
-					// 	map((buffer) => {
-					// 		return { buffer, filename };
-					// 	})
-					// );
+					let buffer = workbook.xlsx.writeBuffer({ filename })
+					// return {buffer, filename }
+					const buffer$ = from(workbook.xlsx.writeBuffer({ filename }));
+					return buffer$.pipe(
+						map((buffer) => {
+							return { buffer, filename };
+						})
+					);
 				})
 		)
 	}

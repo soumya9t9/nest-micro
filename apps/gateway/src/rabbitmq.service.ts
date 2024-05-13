@@ -4,12 +4,12 @@ import { map } from 'rxjs';
 @Injectable()
 export class RabbitMQService {
   constructor(
-    @Inject('RMQ_SERVICE') private readonly client: ClientProxy,
+    // @Inject('RMQ_SERVICE') private readonly client: ClientProxy,
     @Inject('FRANCHISOR_SERVICE') private readonly clientServiceTCP: ClientProxy,
   ) {}
-  public send(pattern: string, data: any) {
-    return this.client.send(pattern, data).toPromise();
-  }
+  // public send(pattern: string, data: any) {
+    // return this.client.send(pattern, data).toPromise();
+  // }
 
   public pingServiceTCP() {
     const pattern = { cmd: 'ping' };

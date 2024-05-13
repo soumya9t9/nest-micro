@@ -18,11 +18,11 @@ export class AppController {
 
   @Get('rmq-send')
   async sendRmq() {
-    this.rabbitMQService.send('rabbit-mq-producer', {
-      message: this.appService.getHello(),
-    }).catch((e) =>{
-      console.log("error", e)
-    });
+    // this.rabbitMQService.send('rabbit-mq-producer', {
+    //   message: this.appService.getHello(),
+    // }).catch((e) =>{
+    //   console.log("error", e)
+    // });
     return 'Message sent to the queue!';
   }
 

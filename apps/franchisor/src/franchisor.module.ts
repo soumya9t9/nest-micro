@@ -13,28 +13,28 @@ import { S3bucketService } from './services/s3bucket/s3bucket.service';
 	imports: [
 		EventEmitterModule,
 		ClientsModule.register([
-      {
-        name: 'GATEWAY_SERVICE',
-        transport: Transport.TCP,
-        options: {
-          host: '127.0.0.1',
-          port: 3300,
-        },
-      },
 			{
-				name: 'RMQ_SERVICE',
-				transport: Transport.RMQ,
+				name: 'GATEWAY_SERVICE',
+				transport: Transport.TCP,
 				options: {
-					urls: [ 'amqp://localhost:5672' ],
-					queue: 'cats_queue',
-					queueOptions: {
-						durable: false
-					}
+					host: '127.0.0.1',
+					port: 3300
 				}
 			}
-		]),
+			// {
+			// 	name: 'RMQ_SERVICE',
+			// 	transport: Transport.RMQ,
+			// 	options: {
+			// 		urls: [ 'amqp://localhost:5672' ],
+			// 		queue: 'cats_queue',
+			// 		queueOptions: {
+			// 			durable: false
+			// 		}
+			// 	}
+			// }
+		])
 	],
 	controllers: [ FranchisorController, SseController ],
-	providers: [ FranchisorService, RabbitMQService,ExcelService, SseService, S3bucketService ]
+	providers: [ FranchisorService, RabbitMQService, ExcelService, SseService, S3bucketService ]
 })
 export class FranchisorModule {}

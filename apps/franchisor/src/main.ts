@@ -28,31 +28,31 @@ async function bootstrap() {
 	SwaggerModule.setup('/', app, document);
 
   // microservice #1
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.TCP,
-    options:{
-      host: '127.0.0.1',
-      port: 3001
-    }
-  })
+  // app.connectMicroservice<MicroserviceOptions>({
+  //   transport: Transport.TCP,
+  //   options:{
+  //     host: '127.0.0.1',
+  //     port: 3001
+  //   }
+  // })
 
   // microservice #2
-	const microserviceRMQ = app.connectMicroservice<MicroserviceOptions>({
-		transport: Transport.RMQ,
-		options: {
-			urls: [ 'amqp://localhost:5672' ],
-			queue: 'cats_queue',
-			queueOptions: {
-				durable: false
-			}
-		}
-	});
+	// const microserviceRMQ = app.connectMicroservice<MicroserviceOptions>({
+	// 	transport: Transport.RMQ,
+	// 	options: {
+	// 		urls: [ 'amqp://localhost:5672' ],
+	// 		queue: 'cats_queue',
+	// 		queueOptions: {
+	// 			durable: false
+	// 		}
+	// 	}
+	// });
 
   app.enableVersioning({
     type: VersioningType.URI,
   });
 
-  await app.startAllMicroservices();
+  // await app.startAllMicroservices();
 	await app.listen(3001);
   console.log(`franchisor- ${await app.getUrl()}`);
 

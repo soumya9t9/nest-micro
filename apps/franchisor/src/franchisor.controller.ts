@@ -23,13 +23,13 @@ export class FranchisorController {
 		return this.franchisorService.getHello();
 	}
 
-	@Get('rmq-send')
-	async sendRmq() {
-		this.rabbitMQService.send('rabbit-mq-another', {
-			message: this.franchisorService.getHello()
-		});
-		return 'Message sent to the queue!';
-	}
+	// @Get('rmq-send')
+	// async sendRmq() {
+	// 	this.rabbitMQService.send('rabbit-mq-another', {
+	// 		message: this.franchisorService.getHello()
+	// 	});
+	// 	return 'Message sent to the queue!';
+	// }
 
 	@MessagePattern('rabbit-mq-producer')
 	public async execute(@Payload() data: any, @Ctx() context: RmqContext) {
@@ -123,6 +123,7 @@ export class FranchisorController {
 		if (!file) throw new BadRequestException('File Missing ! Please upload a file');
 		console.log(file);
 		return this.excelService.readAndEditFile(file).subscribe(({ buffer, filename }) => {
+			console.log(buffer);
 			return res.set('Content-Disposition', `attachment; filename=${filename}`)
 				.set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 				.send(buffer);
