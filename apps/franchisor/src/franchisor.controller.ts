@@ -149,7 +149,8 @@ export class FranchisorController {
 	uploadToS3(@Res() res: Response, @UploadedFile() file: Express.Multer.File) {
 		if (!file) throw new BadRequestException('File Missing ! Please upload a file');
 		console.log(file);
-		this.s3bucket.uploadFile(file).then(() =>{
+		this.s3bucket.uploadFile(file).then((resp) =>{
+			console.log(resp);
 			res.status(200).send({ message: `successfully uploaded` });
 		});
 	}
