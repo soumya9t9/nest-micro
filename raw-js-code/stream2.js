@@ -39,7 +39,7 @@ app.get('/chunk', (req, res) => {
 });
 
 app.post('/', (req, res) => {
-    const filePath = path.join(__dirname, `/image.jpg`);
+    const filePath = path.join(__dirname, `/image2.jpg`);
     const stream = fs.createWriteStream(filePath);
 
     stream.on('open', () => req.pipe(stream));
