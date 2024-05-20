@@ -1,0 +1,5 @@
+jest.spyOn(mockUsersService, 'update').mockReturnValue(user);
+
+expect(result).toEqual(user);
+    expect(mockUsersService.findOne).toBeCalled();
+    expect(mockUsersService.findOne).toBeCalledWith(+id);

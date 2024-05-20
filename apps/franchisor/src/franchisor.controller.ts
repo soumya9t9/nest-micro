@@ -1,9 +1,9 @@
 import {
 	BadRequestException,
-	Body,
 	Controller,
 	Get,
-	Param,
+	Inject,
+	LoggerService,
 	Post,
 	Query,
 	RawBodyRequest,
@@ -14,26 +14,43 @@ import {
 } from '@nestjs/common';
 import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiQuery } from '@nestjs/swagger';
 import { Response } from 'express';
 import { delay, from, of } from 'rxjs';
 import { FranchisorService } from './franchisor.service';
 import { RabbitMQService } from './rabbitmq.service';
 import { ExcelService } from './services/excel.service';
 import { S3bucketService } from './services/s3bucket/s3bucket.service';
-import { createWriteStream } from 'fs';
+import { Logger } from 'winston';
+import { WINSTON_MODULE_NEST_PROVIDER, WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller()
 export class FranchisorController {
+	// private logger = {log: (lol) => {}};
 	constructor(
 		private readonly franchisorService: FranchisorService,
 		private readonly rabbitMQService: RabbitMQService,
 		private readonly excelService: ExcelService,
-		private readonly s3bucket: S3bucketService
-	) {}
+		private readonly s3bucket: S3bucketService,
+		@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+		// @Inject(Logger) private readonly logger: Logger,
+		@Inject('XLog') private readonly xLog: Logger
+		// private readonly logger: Logger
+	) { 
+		this.xLog.error({"error": "found error"});
+		this.xLog.info({"logeed": "message"});
+		this.logger.error({"error": "found error"});
+		this.logger.info({"logeed": "message"});
+	}
 
+	@UseInterceptors(CacheInterceptor)
+	@CacheKey('hello-key')
+	@CacheTTL( 12 * 60 * 60 * 1000) 
 	@Get('hello')
 	getHello(): string {
+		// this.xLog.info({hello: "hello"})
+		this.logger.info({hello: "hello"})
 		return this.franchisorService.getHello();
 	}
 
@@ -49,25 +66,25 @@ export class FranchisorController {
 	public async execute(@Payload() data: any, @Ctx() context: RmqContext) {
 		const channel = context.getChannelRef();
 		const orginalMessage = context.getMessage();
-		console.log('data got at franchisor', data);
+		this.logger.info('data got at franchisor', data);
 		channel.ack(orginalMessage);
 	}
 
 	@MessagePattern({ cmd: 'ping' })
 	ping(arg: any) {
-		console.log('service-ppr');
+		this.logger.info('service-ppr');
 		return of('sending from franchisor').pipe(delay(500));
 	}
 
 	@Get('/ping-tcp-gateway')
 	pingServiceTCP() {
-		console.log('franchisor - ping to gateway');
+		this.logger.info('franchisor - ping to gateway');
 		return this.rabbitMQService.pingServiceTCP();
 	}
 
 	@Get('/excel/download')
 	downloadExcel(@Res() res) {
-		console.log('api - download excel');
+		this.logger.info('api - download excel');
 		let data = [
 			{
 				route: 'INDEL-INMBI',
@@ -117,7 +134,7 @@ export class FranchisorController {
 		file: Express.Multer.File
 	) {
 		if (!file) throw new BadRequestException('File Missing ! Please upload a file');
-		console.log(file);
+		this.logger.info(file);
 		this.excelService.readExcelusingExceljs(file);
 		// this.excelService.readExcelusingXlsx(file);
 		res.status(200).send({ message: `successfully uploaded` });
@@ -139,9 +156,9 @@ export class FranchisorController {
 	})
 	validateExcel(@Res() res: Response, @UploadedFile() file: Express.Multer.File) {
 		if (!file) throw new BadRequestException('File Missing ! Please upload a file');
-		console.log(file);
+		this.logger.info(file);
 		return this.excelService.readAndEditFile(file).subscribe(({ buffer, filename }) => {
-			console.log(buffer);
+			this.logger.info(buffer);
 			return res
 				.set('Content-Disposition', `attachment; filename=${filename}`)
 				.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -167,9 +184,9 @@ export class FranchisorController {
 	// @Header('content-type', 'multipart/form-data')
 	uploadToS3(@Res() res: Response, @UploadedFile() file: Express.Multer.File) {
 		if (!file) throw new BadRequestException('File Missing ! Please upload a file');
-		console.log(file);
+		this.logger.info(file);
 		this.s3bucket.uploadFile(file).then((resp) => {
-			console.log(resp);
+			this.logger.info(resp);
 			res.status(200).send({ message: `successfully uploaded` });
 		});
 	}
@@ -183,34 +200,12 @@ export class FranchisorController {
 	@Get('s3/download/')
 	downloadFromS3(@Query('fileName') fileName, @Res() res, @Req() req: RawBodyRequest<Request>) {
 		this.s3bucket.downlaodFile(fileName).subscribe((value) => {
-			// console.log(value);
-			const nodeWriteStream = createWriteStream(fileName, 'binary');
-			const stream = new WritableStream({
-				write(chunk) {
-					nodeWriteStream.write(chunk);
-				},
-				close() {
-					nodeWriteStream.close();
-				},
-				abort(err) {
-					nodeWriteStream.destroy(err);
-					throw err;
-				}
+			from(value.Body.transformToByteArray()).subscribe((biteArray) => {
+				this.logger.info(biteArray);
+				res.set('Content-Disposition', `attachment; filename=${fileName}`)
+					.set('Content-Type', value.ContentType)
+					.send(Buffer.from(biteArray));
 			});
-			value.Body.transformToWebStream().pipeTo(stream).then((v) => {
-				nodeWriteStream.pipe(res);
-				res
-						.set('Content-Disposition', `attachment; filename=${fileName}`)
-						.set('Content-Type', value.ContentType)
-						.send(nodeWriteStream);
-			})
-			// from(value.Body.transformToWebStream().pipeTo(res)).subscribe((biteArray) => {
-			// 	console.log(biteArray);
-			// 	res
-			// 		.set('Content-Disposition', `attachment; filename=${fileName}`)
-			// 		.set('Content-Type', value.ContentType)
-			// 		.send(biteArray);
-			// });
 		});
 	}
 }

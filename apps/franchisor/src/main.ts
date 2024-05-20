@@ -3,6 +3,14 @@ import { FranchisorModule } from './franchisor.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { VersioningType } from '@nestjs/common';
+import * as winston from 'winston'
+import helmet from 'helmet';
+import { WinstonModule } from 'nest-winston';
+import { loggerImplementation } from './configs/logger.config';
+
+// import {winston ,  createLogger, transports} from 'winston';
+bootstrap();
+
 
 async function bootstrap() {
   // const app = await NestFactory.create(FranchisorModule);
@@ -15,17 +23,20 @@ async function bootstrap() {
   //   },
   // });
 
-  
-	const app = await NestFactory.create(FranchisorModule);
+
+  const app = await NestFactory.create(FranchisorModule, { bufferLogs: true, });
   app.enableCors();
-	const options = new DocumentBuilder()
-		.setTitle('API docs')
-		.addTag('franchisor')
-		.addTag('tasks')
-		.setVersion('1.0')
-		.build();
-	const document = SwaggerModule.createDocument(app, options);
-	SwaggerModule.setup('/', app, document);
+  app.use(helmet());
+  // app.useLogger(WinstonModule.createLogger({ instance: loggerImplementation() }));
+
+  const options = new DocumentBuilder()
+    .setTitle('API docs')
+    .addTag('franchisor')
+    .addTag('tasks')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('/', app, document);
 
   // microservice #1
   // app.connectMicroservice<MicroserviceOptions>({
@@ -37,23 +48,24 @@ async function bootstrap() {
   // })
 
   // microservice #2
-	// const microserviceRMQ = app.connectMicroservice<MicroserviceOptions>({
-	// 	transport: Transport.RMQ,
-	// 	options: {
-	// 		urls: [ 'amqp://localhost:5672' ],
-	// 		queue: 'cats_queue',
-	// 		queueOptions: {
-	// 			durable: false
-	// 		}
-	// 	}
-	// });
+  // const microserviceRMQ = app.connectMicroservice<MicroserviceOptions>({
+  // 	transport: Transport.RMQ,
+  // 	options: {
+  // 		urls: [ 'amqp://localhost:5672' ],
+  // 		queue: 'cats_queue',
+  // 		queueOptions: {
+  // 			durable: false
+  // 		}
+  // 	}
+  // });
 
   app.enableVersioning({
     type: VersioningType.URI,
   });
 
+
   // await app.startAllMicroservices();
-	await app.listen(3001);
+  await app.listen(3001);
   console.log(`franchisor- ${await app.getUrl()}`);
 
   // const app = await NestFactory.createMicroservice(FranchisorModule, {
@@ -65,4 +77,5 @@ async function bootstrap() {
   // } as TcpOptions);
   // await app.listenAsync();
 }
-bootstrap();
+
+
