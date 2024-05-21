@@ -14,6 +14,8 @@ import { S3bucketService } from './services/s3bucket/s3bucket.service';
 import { SseController } from './sse/sse.controller';
 import { SseService } from './sse/sse.service';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AuthModule } from './project/auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
 	imports: [
@@ -45,6 +47,10 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 			ttl: 5 * 60 * 60, // seconds
 			max: 10, // maximum number of items in cache
 		}),
+
+		AuthModule,
+
+		UserModule,
 		// CacheModule.registerAsync({  
 		// 	isGlobal: true,  
 		// 	useFactory: async () => ({  
