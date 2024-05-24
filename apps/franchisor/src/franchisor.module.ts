@@ -15,7 +15,7 @@ import { SseController } from './sse/sse.controller';
 import { SseService } from './sse/sse.service';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthModule } from './project/auth/auth.module';
-import { UserModule } from './user/user.module';
+import { UserModule } from './project/user/user.module';
 
 @Module({
 	imports: [
