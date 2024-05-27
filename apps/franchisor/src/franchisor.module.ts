@@ -19,6 +19,7 @@ import { UserModule } from './project/user/user.module';
 
 @Module({
 	imports: [
+		
 		EventEmitterModule,
 		WinstonModule.forRoot({instance: loggerImplementation()}),
 		ClientsModule.register([
