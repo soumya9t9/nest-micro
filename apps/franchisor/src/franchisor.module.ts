@@ -21,6 +21,7 @@ import { CommonModule } from '@app/common';
 
 @Module({
 	imports: [
+		
 		EventEmitterModule,
 		ConfigModule.forRoot({
 			envFilePath: `./env/${process.env.NODE_ENV}.env`,
