@@ -1,9 +1,7 @@
 
 
-import { Injectable, LogLevel, LoggerService } from '@nestjs/common';
-import * as winston from 'winston'
+import * as winston from 'winston';
 
-// @Injectable()
 export class CusLogger {
 
     public logger: winston.Logger;

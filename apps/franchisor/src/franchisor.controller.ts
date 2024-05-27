@@ -23,7 +23,7 @@ import { ExcelService } from './services/excel.service';
 import { S3bucketService } from './services/s3bucket/s3bucket.service';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_NEST_PROVIDER, WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
+import { Cache, CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller()
 export class FranchisorController {
@@ -33,25 +33,33 @@ export class FranchisorController {
 		private readonly rabbitMQService: RabbitMQService,
 		private readonly excelService: ExcelService,
 		private readonly s3bucket: S3bucketService,
+		private cacheManager: Cache,
 		@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
 		// @Inject(Logger) private readonly logger: Logger,
 		@Inject('XLog') private readonly xLog: Logger
-		// private readonly logger: Logger
-	) { 
-		this.xLog.error({"error": "found error"});
-		this.xLog.info({"logeed": "message"});
-		this.logger.error({"error": "found error"});
-		this.logger.info({"logeed": "message"});
+	) // private readonly logger: Logger
+	{
+		this.xLog.error({ error: 'found error' });
+		this.xLog.info({ logeed: 'message' });
+		this.logger.error({ error: 'found error' });
+		this.logger.info({ logeed: 'message' });
 	}
 
 	@UseInterceptors(CacheInterceptor)
 	@CacheKey('hello-key')
-	@CacheTTL( 12 * 60 * 60 * 1000) 
+	@CacheTTL(12 * 60 * 60 * 1000)
 	@Get('hello')
-	getHello(): string {
+	getHello(@Res() res) {
 		// this.xLog.info({hello: "hello"})
-		this.logger.info({hello: "hello"})
-		return this.franchisorService.getHello();
+		const cache$ = from(this.cacheManager.get('hello-key1'));
+		cache$.subscribe((cachedData) => {
+			if (cachedData) res.send(cachedData);
+			else {
+				res.send(this.franchisorService.getHello());
+			}
+		});
+
+		this.logger.info({ hello: 'hello' });
 	}
 
 	// @Get('rmq-send')
@@ -121,7 +129,7 @@ export class FranchisorController {
 	uploadExcel(
 		@Res() res: Response,
 		@UploadedFile()
-		// new ParseFilePipeBuilder()
+		file: // new ParseFilePipeBuilder()
 		// // .addFileTypeValidator({
 		// //   fileType: '.xlsx',
 		// // })
@@ -131,7 +139,7 @@ export class FranchisorController {
 		// .build({
 		//   errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
 		// }),
-		file: Express.Multer.File
+		Express.Multer.File
 	) {
 		if (!file) throw new BadRequestException('File Missing ! Please upload a file');
 		this.logger.info(file);
@@ -202,7 +210,8 @@ export class FranchisorController {
 		this.s3bucket.downlaodFile(fileName).subscribe((value) => {
 			from(value.Body.transformToByteArray()).subscribe((biteArray) => {
 				this.logger.info(biteArray);
-				res.set('Content-Disposition', `attachment; filename=${fileName}`)
+				res
+					.set('Content-Disposition', `attachment; filename=${fileName}`)
 					.set('Content-Type', value.ContentType)
 					.send(Buffer.from(biteArray));
 			});

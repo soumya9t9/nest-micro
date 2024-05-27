@@ -1,20 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import * as AWS from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { GlobalConst } from '../../global.const';
 import { Observable, from, map } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
+import { envKeys } from '../../configs/env.config.interface';
 
 const REGION = 'ap-south-1';
 @Injectable()
 export class S3bucketService {
 	AWS_S3_BUCKET = 'nest-buck';
-	s3Client = new AWS.S3({
-		region: REGION,
-		credentials: {
-			accessKeyId: GlobalConst.accessKeyId,
-			secretAccessKey: GlobalConst.secretAccessKey
-		}
-	});
+	s3Client: AWS.S3;
 	// s3Client = new AWS.S3Client({
 	//     region: REGION,
 	//     credentials: {
@@ -23,7 +18,14 @@ export class S3bucketService {
 	//     }
 	// });
 
-	constructor() {
+	constructor( private configService: ConfigService) {
+		this.s3Client = new AWS.S3({
+			region: REGION,
+			credentials: {
+				accessKeyId: configService.get(envKeys.AWS_ACCESS_KEY_ID),
+				secretAccessKey: configService.get(envKeys.AWS_SECRET_ACCESS_KEY)
+			}
+		});
 		// AWS.config.update({region: 'us-west-2'});
 	}
 

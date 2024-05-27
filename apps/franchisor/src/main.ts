@@ -7,6 +7,7 @@ import * as winston from 'winston'
 import helmet from 'helmet';
 import { WinstonModule } from 'nest-winston';
 import { loggerImplementation } from './configs/logger.config';
+import { ConfigService } from '@nestjs/config';
 
 // import {winston ,  createLogger, transports} from 'winston';
 bootstrap();
@@ -63,9 +64,10 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
 
+  const configService = app.get(ConfigService);
 
   // await app.startAllMicroservices();
-  await app.listen(3001);
+  await app.listen(configService.get('PORT'));
   console.log(`franchisor- ${await app.getUrl()}`);
 
   // const app = await NestFactory.createMicroservice(FranchisorModule, {
