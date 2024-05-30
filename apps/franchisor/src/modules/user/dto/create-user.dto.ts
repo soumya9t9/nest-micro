@@ -7,7 +7,8 @@ export class CreateUserDto  {
 
     mobile: number;
     email: string;
-    loginId: string;
+    profileId: string;
+    loginId: number;
     
     @IsNotEmpty()
     password: string;

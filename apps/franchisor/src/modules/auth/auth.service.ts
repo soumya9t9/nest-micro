@@ -7,14 +7,23 @@ export class AuthService {
 
     constructor(private usersService: UserService, private jwtService: JwtService) { }
 
-    async signIn(accessId, credntial) {
-        const user = await this.usersService.findOne(accessId);
-        if (user?.password !== pass) {
+    async signIn(user, credntial) {
+        if (user?.password !== credntial) {
             throw new UnauthorizedException();
         }
         const payload = { sub: user.id, email: user.email };
         return {
             access_token: await this.jwtService.signAsync(payload),
         };
+    }
+    
+    async signInByEmail(email, credntial) {
+        const user = await this.usersService.findOneByEmail(email);
+        return this.signIn(user, credntial)
+    }
+    
+    async signInbyProfileId(accessId, credntial) {
+        const user = await this.usersService.findOneByProfileId(accessId);
+        return this.signIn(user, credntial);
     }
 }

@@ -1,4 +1,4 @@
-import { DeepPartial, FindManyOptions, FindOneOptions, FindOptionsWhere } from "typeorm";
+import { DeepPartial, DeleteResult, FindManyOptions, FindOneOptions, FindOptionsWhere } from "typeorm";
 
 export interface IBaseRepository<T> {
     create(data: DeepPartial<T>): T;
@@ -12,4 +12,5 @@ export interface IBaseRepository<T> {
     findWithRelations(relations: FindManyOptions<T>): Promise<T[]>
     preload(entityLike: DeepPartial<T>): Promise<T>
     findOne(options: FindOneOptions<T>): Promise<T>
+    delete(data: DeepPartial<T>): Promise<DeleteResult>
 }

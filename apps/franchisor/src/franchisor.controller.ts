@@ -51,14 +51,14 @@ export class FranchisorController {
 	@Get('hello')
 	getHello(@Res() res) {
 		// this.xLog.info({hello: "hello"})
-		const cache$ = from(this.cacheManager.get('hello-key1'));
-		cache$.subscribe((cachedData) => {
-			if (cachedData) res.send(cachedData);
-			else {
-				res.send(this.franchisorService.getHello());
-			}
-		});
-
+		// const cache$ = from(this.cacheManager.get('hello-key1'));
+		// cache$.subscribe((cachedData) => {
+		// 	if (cachedData) res.send(cachedData);
+		// 	else {
+		// 		res.send(this.franchisorService.getHello());
+		// 	}
+		// });
+		res.send(this.franchisorService.getHello());
 		this.logger.info({ hello: 'hello' });
 	}
 

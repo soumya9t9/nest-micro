@@ -1,24 +1,24 @@
+import { BaseEntity } from "@app/common/interfaces/base.entity";
 import { Exclude } from "class-transformer";
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
 
 @Entity()
-export class User {
+export class User extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id:number;
 
-    @Column()
+    @Column({unique: true})
     mobile: number;
     
-    @Column()
+    @Column({unique: true})
     email: string;
     
     @Column()
-    loginId: string;
-    
+    loginId: number;
+
     @Column()
-    @Exclude({toPlainOnly: true})
-    password: string;
+    profileId: string;
     
     @Column()
     firstName:string;
@@ -29,9 +29,9 @@ export class User {
     @Column()
     lastName:string;
 
-    @CreateDateColumn()
-    createdOn: Date
+    
+    @Column()
+    @Exclude({toPlainOnly: true})
+    password: string;  
 
-    @UpdateDateColumn()
-    updatedOn: Date
 }

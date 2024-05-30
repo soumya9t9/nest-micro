@@ -1,4 +1,4 @@
-import { DeepPartial, FindManyOptions, FindOneOptions, FindOptionsWhere, Repository } from "typeorm";
+import { DeepPartial, DeleteResult, FindManyOptions, FindOneOptions, FindOptionsWhere, Repository } from "typeorm";
 import { IBaseRepository } from "./interfaces/base-repository.interface";
 
 interface HasId {
@@ -56,5 +56,9 @@ export abstract class BaseAbstractRepostitory<T extends HasId> implements IBaseR
 
     public async findOne(options: FindOneOptions<T>): Promise<T> {
         return this.entity.findOne(options)
+    }
+
+    public async delete(data: T): Promise<DeleteResult> {
+        return await this.entity.delete(data.id)
     }
 }

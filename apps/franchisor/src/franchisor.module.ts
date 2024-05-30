@@ -18,22 +18,29 @@ import { S3bucketService } from './services/s3bucket/s3bucket.service';
 import { SseController } from './sse/sse.controller';
 import { SseService } from './sse/sse.service';
 import { CommonModule } from '@app/common';
+import { configuration, validateConfig } from './configs/env.config';
+import appConfig from './configs/app.config';
+import { GoogleStrategy } from './passport/google.stratergy';
+import { JwtStrategy } from './passport/jwt.stratergy';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
 	imports: [
-		
+		TypeOrmModule.forRoot(),
 		EventEmitterModule,
 		ConfigModule.forRoot({
-			envFilePath: `./env/${process.env.NODE_ENV}.env`,
+			envFilePath: `./env/.env.${process.env.NODE_ENV || 'development'}`,
 			validationSchema: Joi.object({
-				NODE_ENV: Joi.string().valid('development', 'production', 'test', 'local').default('development'),
-				PORT: Joi.number().port().default(3000)
+				NODE_ENV: Joi.string().valid('development', 'test', 'uat', 'production', 'local').default('development'),
+				PORT: Joi.number().port().default(3001)
 			}),
-			validationOptions: {
-				allowUnknown: false,
-				abortEarly: true
-			}
-			// load: [configuration]
+			isGlobal: true,
+			// validationOptions: {
+			// 	allowUnknown: false,
+			// 	abortEarly: true
+			// },
+			validate: validateConfig,
+			load: [appConfig]
 		}),
 		WinstonModule.forRoot({ instance: loggerImplementation() }),
 		ClientsModule.register([
@@ -95,7 +102,9 @@ import { CommonModule } from '@app/common';
 		{
 			provide: APP_INTERCEPTOR,
 			useClass: CacheInterceptor
-		}
+		},
+		GoogleStrategy,
+		JwtStrategy
 	]
 })
 export class FranchisorModule {}
