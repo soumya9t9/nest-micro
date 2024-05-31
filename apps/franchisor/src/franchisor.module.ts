@@ -23,10 +23,21 @@ import appConfig from './configs/app.config';
 import { GoogleStrategy } from './passport/google.stratergy';
 import { JwtStrategy } from './passport/jwt.stratergy';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
 	imports: [
-		TypeOrmModule.forRoot(),
+
+		TypeOrmModule.forRoot({
+			type: 'postgres',
+			host: "13.202.113.237",//process.env.POSTGRES_HOST,
+			port: 5432,//parseInt(process.env.POSTGRES_PORT, 5432),
+			username: 'elegant',//process.env.POSTGRES_USERNAME,
+			password: 'admin',//process.env.POSTGRES_PASS,
+			database: 'elegant',//process.env.POSTGRES_SCHEMA,
+			autoLoadEntities: true,
+			synchronize: true,
+		}),
 		EventEmitterModule,
 		ConfigModule.forRoot({
 			envFilePath: `./env/.env.${process.env.NODE_ENV || 'development'}`,
@@ -83,9 +94,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 		CommonModule,
 		AuthModule,
-		UserModule
+		UserModule,
+		JwtModule
 	],
-	controllers: [ FranchisorController, SseController ],
+	controllers: [FranchisorController, SseController],
 	providers: [
 		FranchisorService,
 		RabbitMQService,
@@ -104,7 +116,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 			useClass: CacheInterceptor
 		},
 		GoogleStrategy,
-		JwtStrategy
-	]
+		JwtStrategy,
+	],
+
 })
-export class FranchisorModule {}
+export class FranchisorModule { }

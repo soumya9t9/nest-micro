@@ -7,6 +7,7 @@ import { Strategy, VerifyCallback } from 'passport-google-oauth2';
 import { User } from '../modules/user/entities/user.entity';
 import { EnvironmentVariables, IEnvironmentVariables } from '../configs/env.config.interface';
 import appConfig from '../configs/app.config';
+import { UserRepository } from '../modules/user/user.repository';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -14,7 +15,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     // @Inject() private configService: ConfigService<IEnvironmentVariables>,
 
     @Inject(appConfig.KEY) private configService: ConfigType<typeof appConfig>,
-    @InjectRepository(User) private userRepository: Repository<User>,
+    // @InjectRepository(User) private userRepository: UserRepository,
   ) {
     super({
       clientID: configService.google.clientID,

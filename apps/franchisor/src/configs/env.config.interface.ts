@@ -32,6 +32,11 @@ export enum EnvKeys {
 	'GOOGLE_CLIENT_ID' = 'GOOGLE_CLIENT_ID',
 	'GOOGLE_CLIENT_SECRET' = 'GOOGLE_CLIENT_SECRET',
 
+	POSTGRES_PORT='POSTGRES_PORT',
+    POSTGRES_USERNAME='POSTGRES_USERNAME',
+	POSTGRES_PASS='POSTGRES_PASS',
+	POSTGRES_HOST='POSTGRES_HOST',
+	POSTGRES_SCHEMA='POSTGRES_SCHEMA'
 }
 
 export class EnvironmentVariables {
@@ -56,13 +61,14 @@ export class EnvironmentVariables {
 
 	/* DB */
 	@IsDefined() POSTGRES_USERNAME: string;
-
+	@IsDefined() POSTGRES_PASS: string;
+	
 	@IsDefined()
 	// @IsNumberString()
 	// @MinLength(1)
 	POSTGRES_PORT: number;
 
-	@IsDefined() POSTGRES_URL: string;
+	@IsDefined() POSTGRES_HOST: string;
 
 	@IsDefined() POSTGRES_SCHEMA: string;
 
