@@ -30,4 +30,11 @@ export class User extends BaseEntity {
     @Exclude({toPlainOnly: true})
     password: string;  
 
+    @Column()
+    provider: string
+}
+
+export enum ProviderEnum {
+    SELF = 'self',
+    GOOGLE = 'google'
 }

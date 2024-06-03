@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Inject, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ISignIn } from './signin.interface';
 import { Public } from './public-stratergy';
 import appConfig from '../../configs/app.config';
 import { ConfigType } from '@nestjs/config';
+import { AuthGuard } from '@nestjs/passport';
 
 @Public()
 @Controller('auth')
@@ -19,14 +20,16 @@ export class AuthController {
 		else return this.authService.signInbyProfileId(body.profileId, body.cred);
 	}
 
-  @Post('/google')
+  @UseGuards(AuthGuard('google'))
+  @Get('/google')
   oAuthLoginGoogle() {
 
   }
 
-  @Post('/google/callback')
-  oAuthCallbackGoogle() {
-
+  @UseGuards(AuthGuard('google'))
+  @Get('/google/callback')
+  oAuthCallbackGoogle(@Req() req) {
+    return this.authService.googleLogin(req)
   }
 
   @Post('/opt/email')
