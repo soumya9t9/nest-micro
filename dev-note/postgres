@@ -1,0 +1,20 @@
+sudo -u postgres psql
+
+sudo psql -U admin -h localhost -W -d elegant
+
+CREATE USER admin WITH PASSWORD 'admin';
+GRANT ALL PRIVILEGES ON DATABASE elegant TO admin;
+
+GRANT ALL ON SCHEMA public TO admin;
+
+
+GRANT CONNECT ON DATABASE elegant TO admin;
+
+GRANT pg_read_all_data TO admin;
+GRANT pg_write_all_data TO admin;
+
+GRANT USAGE ON SCHEMA public TO admin;
+
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO admin;

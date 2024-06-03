@@ -21,28 +21,20 @@ import { CommonModule } from '@app/common';
 import { configuration, validateConfig } from './configs/env.config';
 import appConfig from './configs/app.config';
 import { GoogleStrategy } from './passport/google.stratergy';
-import { JwtStrategy } from './passport/jwt.stratergy';
+import { JwtAccessStrategy } from './passport/jwt-access.stratergy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
 	imports: [
-
-		TypeOrmModule.forRoot({
-			type: 'postgres',
-			host: "13.202.113.237",//process.env.POSTGRES_HOST,
-			port: 5432,//parseInt(process.env.POSTGRES_PORT, 5432),
-			username: 'elegant',//process.env.POSTGRES_USERNAME,
-			password: 'admin',//process.env.POSTGRES_PASS,
-			database: 'elegant',//process.env.POSTGRES_SCHEMA,
-			autoLoadEntities: true,
-			synchronize: true,
-		}),
 		EventEmitterModule,
 		ConfigModule.forRoot({
 			envFilePath: `./env/.env.${process.env.NODE_ENV || 'development'}`,
 			validationSchema: Joi.object({
-				NODE_ENV: Joi.string().valid('development', 'test', 'uat', 'production', 'local').default('development'),
+				NODE_ENV: Joi.string()
+					.valid('development', 'test', 'uat', 'production', 'local')
+					.default('development'),
 				PORT: Joi.number().port().default(3001)
 			}),
 			isGlobal: true,
@@ -51,7 +43,7 @@ import { JwtModule } from '@nestjs/jwt';
 			// 	abortEarly: true
 			// },
 			validate: validateConfig,
-			load: [appConfig]
+			load: [ appConfig ]
 		}),
 		WinstonModule.forRoot({ instance: loggerImplementation() }),
 		ClientsModule.register([
@@ -92,12 +84,22 @@ import { JwtModule } from '@nestjs/jwt';
 		// 	}),
 		//   }),
 
+		TypeOrmModule.forRoot({
+			type: 'postgres',
+			host: process.env.POSTGRES_HOST,
+			port: parseInt(process.env.POSTGRES_PORT, 5432),
+			username: process.env.POSTGRES_USERNAME,
+			password: process.env.POSTGRES_PASS,
+			database: process.env.POSTGRES_SCHEMA,
+			autoLoadEntities: true,
+			synchronize: false
+		}),
 		CommonModule,
 		AuthModule,
 		UserModule,
-		JwtModule
+		
 	],
-	controllers: [FranchisorController, SseController],
+	controllers: [ FranchisorController, SseController ],
 	providers: [
 		FranchisorService,
 		RabbitMQService,
@@ -115,9 +117,7 @@ import { JwtModule } from '@nestjs/jwt';
 			provide: APP_INTERCEPTOR,
 			useClass: CacheInterceptor
 		},
-		GoogleStrategy,
-		JwtStrategy,
-	],
 
+	]
 })
-export class FranchisorModule { }
+export class FranchisorModule {}

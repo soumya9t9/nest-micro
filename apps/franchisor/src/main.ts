@@ -1,8 +1,8 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { FranchisorModule } from './franchisor.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { VersioningType } from '@nestjs/common';
+import { ClassSerializerInterceptor, VersioningType } from '@nestjs/common';
 import * as winston from 'winston'
 import helmet from 'helmet';
 import { WinstonModule } from 'nest-winston';
@@ -38,6 +38,8 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('/', app, document);
+
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   // microservice #1
   // app.connectMicroservice<MicroserviceOptions>({

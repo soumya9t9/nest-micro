@@ -4,31 +4,36 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { genSalt, hash } from 'bcrypt';
+import { GlobalConst } from '../../global.const';
 
 @Injectable()
 export class UserService {
-	constructor(@InjectRepository(User) private readonly userRepository: UserRepository) {}
-	create(createUserDto: CreateUserDto) {
-		return this.userRepository.create(createUserDto);
+	constructor(private readonly userRepository: UserRepository) {}
+	async create(createUserDto: CreateUserDto) {
+		genSalt(GlobalConst.saltRound).then((salt) => hash(createUserDto.password, salt)).then((hashedPsw) => {
+			return this.userRepository.insert({ ...createUserDto, password: hashedPsw });
+		});
 	}
 
 	findAll() {
-		return this.userRepository.findAll();
+		return this.userRepository.find();
 	}
 
 	findOneByProfileId(profileId: string) {
+		// return this.userRepository.findOneBy({profileId});
 		return this.userRepository.findOneById(profileId);
 	}
 
-  findOneByEmail(email: string) {
-		return this.userRepository.findOne({where: {email}});
+	findOneByEmail(email: string) {
+		return this.userRepository.findOneBy({ email });
 	}
 
-	update(id: number, updateUserDto: UpdateUserDto) {
-		return this.userRepository.save(updateUserDto);
+	update(profileId: string, updateUserDto: UpdateUserDto) {
+		return this.userRepository.update({ profileId }, updateUserDto);
 	}
 
-	remove(id: number) {
-		return this.userRepository.delete({ loginId: id });
+	remove(profileId: string) {
+		return this.userRepository.delete({ profileId });
 	}
 }
