@@ -17,7 +17,7 @@ export class AuthController {
 	@Post('/local')
 	localLogIn(@Res() res, @Body() body: ISignIn) {
 		if (body.email) return this.authService.signInByEmail(body.email, body.cred);
-		else return this.authService.signInbyProfileId(body.profileId, body.cred);
+		else return this.authService.signInByProfileId(body.profileId, body.cred);
 	}
 
   @UseGuards(AuthGuard('google'))
