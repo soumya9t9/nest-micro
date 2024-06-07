@@ -28,7 +28,7 @@ export const configuration = (): IEnvProps => ({
 
 
 export function validateConfig(configuration: Record<string, unknown>) {
-	console.log("validate", configuration)
+	// console.log("validate", configuration)
 	const finalConfig = plainToClass(EnvironmentVariables, configuration, {
 	  enableImplicitConversion: true,
 	});

@@ -1,15 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiProperty } from '@nestjs/swagger';
+import { Public } from '../auth/public-stratergy';
+import { Response } from 'express';
 
+@Public()
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiProperty({type: CreateUserDto})
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  create(@Body() createUserDto: CreateUserDto, @Res() res:Response) {
+    this.userService.create(createUserDto).subscribe(result => {
+      res.json(result);
+    }, (err) => {
+      // res.writeHead(500);
+      res.status(500).send(err)
+    })
   }
 
   @Get()
@@ -32,3 +42,5 @@ export class UserController {
     return this.userService.remove(id);
   }
 }
+
+

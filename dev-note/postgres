@@ -18,3 +18,18 @@ GRANT USAGE ON SCHEMA public TO admin;
 
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO admin;
+
+---------------------------
+
+create role app_role;
+grant connect on database elegant to app_role ;
+grant connect on database elegant to app_role;
+grant usage on schema public to app_role;
+grant select,insert,update,delete on elegant to app_role;
+grant select,insert,update,delete on all tables in schema public to app_role;
+grant select,insert,update,delete on all tables in schema public to admin;
+ALTER ROLE app_role LOGIN;
+GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA PUBLIC TO app_role;
+grant app_role to admin;
+
+----------------------------------------------

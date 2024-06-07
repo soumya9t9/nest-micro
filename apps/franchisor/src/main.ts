@@ -63,7 +63,7 @@ async function bootstrap() {
   // });
 
   app.enableVersioning({
-    type: VersioningType.URI,
+    type: VersioningType.URI,prefix: "v1"
   });
 
   const configService = app.get(ConfigService);

@@ -7,9 +7,13 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtAccessStrategy } from '../../passport/jwt-access.stratergy';
 import { JwtRefreshStrategy } from '../../passport/jwt-refresh.stratergy';
 import { GoogleStrategy } from '../../passport/google.stratergy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '../user/entities/user.entity';
+import { UserAuthEntity } from './entities/user-auth.entity';
 
 @Module({
 	imports: [
+		TypeOrmModule.forFeature([User, UserAuthEntity]),
 		UserModule,
 		JwtModule.register({
 			secret: 'secret'
