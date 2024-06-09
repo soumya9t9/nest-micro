@@ -92,7 +92,7 @@ import { PassportModule } from '@nestjs/passport';
 			password: process.env.POSTGRES_PASS,
 			database: process.env.POSTGRES_SCHEMA,
 			autoLoadEntities: true,
-			synchronize: false
+			synchronize: true
 		}),
 		CommonModule,
 		AuthModule,

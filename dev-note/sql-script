@@ -1,0 +1,17 @@
+CREATE TABLE public.users (
+   id  SERIAL PRIMARY KEY,
+   userId  integer REFERENCES users (id),
+   sessionId  varchar(30)  NOT NULL,
+   refresh_token varchar(100) UNIQUE NOT NULL,
+   access_token varchar(100) UNIQUE NOT NULL
+);
+
+
+
+CREATE TABLE public.user_auth (
+   id  SERIAL PRIMARY KEY,
+   userId  integer REFERENCES users (id),
+   sessionId  varchar(30)  NOT NULL,
+   refresh_token varchar(100) UNIQUE NOT NULL,
+   access_token varchar(100) UNIQUE NOT NULL
+);

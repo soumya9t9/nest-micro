@@ -10,26 +10,65 @@ GRANT ALL ON SCHEMA public TO admin;
 
 GRANT CONNECT ON DATABASE elegant TO admin;
 
+______________________________________________________________
+--------------------------------------------------------------
+SELECT * FROM pg_stat_activity WHERE datname='elegant';
+CREATE USER admin WITH PASSWORD 'admin';
+
+GRANT CONNECT ON DATABASE elegant TO admin_role;
+
 GRANT pg_read_all_data TO admin;
 GRANT pg_write_all_data TO admin;
 
-GRANT USAGE ON SCHEMA public TO admin;
+
+GRANT USAGE ON SCHEMA public TO admin_role;
+GRANT ALL ON SCHEMA public TO admin_role;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin_role;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO admin_role;
+GRANT ALL PRIVILEGES ON DATABASE elegant TO admin_role;
+
+GRANT admin_role TO admin;
 
 
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO admin;
+______________________________________________________________
+--------------------------------------------------------------
 
----------------------------
+---------------------------------------------
 
-create role app_role;
-grant connect on database elegant to app_role ;
-grant connect on database elegant to app_role;
-grant usage on schema public to app_role;
-grant select,insert,update,delete on elegant to app_role;
-grant select,insert,update,delete on all tables in schema public to app_role;
+create role admin_role;
+ALTER ROLE admin_role LOGIN;
+grant connect on database elegant to admin_role;
+
+grant usage on schema public to admin_role;
+
+grant select,insert,update,delete on elegant to admin_role;
+grant select,insert,update,delete on all tables in schema public to admin_role;
 grant select,insert,update,delete on all tables in schema public to admin;
-ALTER ROLE app_role LOGIN;
-GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA PUBLIC TO app_role;
-grant app_role to admin;
+GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA PUBLIC TO admin_role;
+grant admin_role to admin;
 
 ----------------------------------------------
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO admin;
+
+
+CREATE TABLE public.user_auth (
+   id  SERIAL PRIMARY KEY,
+   userId  integer REFERENCES users (id),
+   sessionId  varchar(30)  NOT NULL,
+   refresh_token varchar(100) UNIQUE NOT NULL,
+   access_token varchar(100) UNIQUE NOT NULL
+);
+
+grant select,insert,update,delete on all tables in schema public to admin_role; 
+grant select,usage,update on all sequences in schema public to admin_role;
+grant execute on all functions in schema public to admin_role;
+grant references, trigger on all tables in schema public to admin_role;
+grant create on schema public to admin_role;
+grant usage on schema public to admin_role;
+
+
+CREATE USER elegant_user WITH ENCRYPTED PASSWORD 'admin';
+GRANT ALL PRIVILEGES ON DATABASE elegant TO elegant_role;
+GRANT pg_read_all_data TO elegant_role;
+GRANT pg_write_all_data TO elegant_role;

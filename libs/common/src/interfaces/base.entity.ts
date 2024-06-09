@@ -2,9 +2,9 @@ import { CreateDateColumn, UpdateDateColumn } from "typeorm"
 
 export class BaseEntity {
     
-    @CreateDateColumn()
+    @CreateDateColumn({name:"created_on"})
     createdOn: Date
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({name: "updated_on"})
     updatedOn: Date
 }

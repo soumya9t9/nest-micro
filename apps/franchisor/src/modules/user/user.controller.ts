@@ -5,6 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Public } from '../auth/public-stratergy';
 import { Response } from 'express';
+import { ProviderEnum } from './entities/user.entity';
 
 @Public()
 @Controller('user')
@@ -14,7 +15,7 @@ export class UserController {
   @ApiProperty({type: CreateUserDto})
   @Post()
   create(@Body() createUserDto: CreateUserDto, @Res() res:Response) {
-    this.userService.create(createUserDto).subscribe(result => {
+    this.userService.create({...createUserDto, provider: ProviderEnum.SELF}).subscribe(result => {
       res.json(result);
     }, (err) => {
       // res.writeHead(500);

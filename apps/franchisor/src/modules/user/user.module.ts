@@ -5,10 +5,11 @@ import { TypeOrmModule, getDataSourceToken, getRepositoryToken } from '@nestjs/t
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
 import { DataSource } from 'typeorm';
+import { UserAuthEntity } from '../auth/entities/user-auth.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User, UserAuthEntity])
   ],
   controllers: [UserController],
   providers: [

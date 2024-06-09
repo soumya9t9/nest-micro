@@ -11,7 +11,7 @@ import { Observable, from, map, mergeMap, of } from 'rxjs';
 @Injectable()
 export class UserService {
 	constructor(private readonly userRepository: UserRepository) {}
-	create(createUserDto: CreateUserDto): Observable<any>{
+	create(createUserDto: Partial<User>): Observable<any>{
 		try {
 			return from(genSalt(GlobalConst.saltRound)).pipe(
 				mergeMap((salt) => from(hash(createUserDto.password, salt))),
@@ -31,6 +31,10 @@ export class UserService {
 	findOneByProfileId(profileId: string) {
 		// return this.userRepository.findOneBy({profileId});
 		return this.userRepository.findOneById(profileId);
+	}
+
+	findOneByUserId(id){
+		return this.userRepository.findOneBy({id});
 	}
 
 	findOneByEmail(email: string) {

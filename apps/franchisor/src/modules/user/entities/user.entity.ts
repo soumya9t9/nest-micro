@@ -14,16 +14,16 @@ export class User extends BaseEntity {
     @Column({unique: true})
     email: string;
 
-    @Column({unique: true})
+    @Column({name: "profile_id",unique: true})
     profileId: string;
     
-    @Column()
+    @Column({name: "first_name"})
     firstName:string;
     
-    @Column()
+    @Column({name: "middle_name"})
     middleName:string;
     
-    @Column()
+    @Column({name:"last_name"})
     lastName:string;
     
     @Column()
