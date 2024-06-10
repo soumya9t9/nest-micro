@@ -8,6 +8,7 @@ import helmet from 'helmet';
 import { WinstonModule } from 'nest-winston';
 import { loggerImplementation } from './configs/logger.config';
 import { ConfigService } from '@nestjs/config';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 // import {winston ,  createLogger, transports} from 'winston';
 bootstrap();
@@ -34,13 +35,14 @@ async function bootstrap() {
     .setTitle('API docs')
     .addTag('franchisor')
     .addTag('tasks')
+    .addBearerAuth({ in: 'header', type: 'http' })
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('/', app, document);
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
+  // app.useGlobalGuards(new JwtAuthGuard(new Reflector()),);
   // microservice #1
   // app.connectMicroservice<MicroserviceOptions>({
   //   transport: Transport.TCP,

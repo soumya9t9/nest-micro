@@ -1,20 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Inject, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiOkResponse, ApiProperty, ApiResponseProperty, ApiTags } from '@nestjs/swagger';
 import { Public } from '../auth/public-stratergy';
 import { Response } from 'express';
-import { ProviderEnum } from './entities/user.entity';
+import { ProviderEnum, User } from './entities/user.entity';
+import { Logger } from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
-@Public()
+
+@ApiTags('user')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+    private readonly userService: UserService) {}
 
   @ApiProperty({type: CreateUserDto})
+  @ApiOkResponse({type: User})
   @Post()
-  create(@Body() createUserDto: CreateUserDto, @Res() res:Response) {
+  create(@Body() createUserDto: CreateUserDto, @Req() req, @Res() res:Response) {
+
+    this.logger.info({ip: req.headers['x-forwarded-for']});
+    this.logger.info({ip: req.socket.remoteAddress});
+    
     this.userService.create({...createUserDto, provider: ProviderEnum.SELF}).subscribe(result => {
       res.json(result);
     }, (err) => {

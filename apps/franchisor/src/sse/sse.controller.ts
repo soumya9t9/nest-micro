@@ -3,8 +3,10 @@ import { Observable, fromEvent, map, of } from 'rxjs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { SseService } from './sse.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('sse')
+@ApiTags('sse')
 export class SseController {
 	private eventEmitter: EventEmitter2;
 	res: Response;

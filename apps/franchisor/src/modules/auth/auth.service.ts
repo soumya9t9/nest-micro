@@ -20,6 +20,8 @@ import { UserAuthEntity } from './entities/user-auth.entity';
 import { REQUEST } from '@nestjs/core';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { IJWT } from './jwt.interfae';
+import { GlobalConst } from '../../global.const';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthService {
@@ -66,7 +68,7 @@ export class AuthService {
 	}
 
 	async getTokens(user: User, extraInfo: any): Promise<{ accessToken: any; refreshToken: any }> {
-		const payload = {
+		const payload:IJWT = {
 			sub: user.id,
 			email: user.email,
 			userName: user.profileId,
@@ -76,11 +78,11 @@ export class AuthService {
 		return {
 			accessToken: await this.jwtService.signAsync(
 				{ ...payload, type: 'access_token' },
-				{ ...this.jwtOptions, expiresIn: '1m' }
+				{ ...this.jwtOptions, expiresIn: GlobalConst.accessTokenExp }
 			),
 			refreshToken: await this.jwtService.signAsync(
 				{ ...payload, type: 'refresh_token' },
-				{ ...this.jwtOptions, expiresIn: '12h' }
+				{ ...this.jwtOptions, expiresIn: GlobalConst.refreshTokenExp }
 			)
 		};
 	}
@@ -144,6 +146,7 @@ export class AuthService {
 			this.logger.info(e);
 		}
 	}
+
 }
 
 function getFirstMiddleAndLastName(name): { fn: string; mn: string; ln: string } {

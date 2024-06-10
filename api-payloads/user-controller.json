@@ -1,0 +1,19 @@
+[{
+    "firstName":"soumya",
+    "middleName":"ranjan",
+    "lastName":"panda",
+    "mobile": 9876543210,
+    "email": "soumya@gmail.com",
+    "profileId": "soumya99",
+        
+    "password": "hidden"
+}
+,
+
+
+{
+    "profileId": "soumya99", 
+    "email": "soumya@gmail.com",
+    "cred":"hidden"
+}
+]

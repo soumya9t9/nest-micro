@@ -1,12 +1,16 @@
+import { CommonModule } from '@app/common';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { WinstonModule } from 'nest-winston';
 import { Logger as WinstonLogger } from 'winston';
+import appConfig from './configs/app.config';
+import { validateConfig } from './configs/env.config';
 import { CusLogger, loggerImplementation } from './configs/logger.config';
 import { FranchisorController } from './franchisor.controller';
 import { FranchisorService } from './franchisor.service';
@@ -17,14 +21,6 @@ import { ExcelService } from './services/excel.service';
 import { S3bucketService } from './services/s3bucket/s3bucket.service';
 import { SseController } from './sse/sse.controller';
 import { SseService } from './sse/sse.service';
-import { CommonModule } from '@app/common';
-import { configuration, validateConfig } from './configs/env.config';
-import appConfig from './configs/app.config';
-import { GoogleStrategy } from './passport/google.stratergy';
-import { JwtAccessStrategy } from './passport/jwt-access.stratergy';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
 
 @Module({
 	imports: [
@@ -116,7 +112,7 @@ import { PassportModule } from '@nestjs/passport';
 		{
 			provide: APP_INTERCEPTOR,
 			useClass: CacheInterceptor
-		},
+		}
 
 	]
 })

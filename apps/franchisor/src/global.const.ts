@@ -1,6 +1,5 @@
 export const GlobalConst = {
-	accessKeyId: '',
-	secretAccessKey: '',
-	jwtSecret: "JWTSecret#@!",
 	saltRound: 10,
+	accessTokenExp: '4h',
+	refreshTokenExp: '1d'
 };

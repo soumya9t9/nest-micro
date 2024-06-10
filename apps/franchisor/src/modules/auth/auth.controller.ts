@@ -6,8 +6,10 @@ import appConfig from '../../configs/app.config';
 import { ConfigType } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
 @Public()
+@ApiTags('authentication')
 @Controller('auth')
 export class AuthController {
 	constructor(

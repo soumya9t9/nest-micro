@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiQuery } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { delay, from, of } from 'rxjs';
 import { FranchisorService } from './franchisor.service';
@@ -26,6 +26,7 @@ import { WINSTON_MODULE_NEST_PROVIDER, WINSTON_MODULE_PROVIDER } from 'nest-wins
 import { Cache, CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller()
+@ApiTags('proof of concept')
 export class FranchisorController {
 	// private logger = {log: (lol) => {}};
 	constructor(
